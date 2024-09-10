@@ -34,6 +34,8 @@ function startCapture(deviceId){
 }
 
 function setup(){
+    initWorker();
+
     canvas = createCanvas(windowWidth, windowHeight, WEBGL, canvasElt);
     pixelDensity(1);
 
@@ -50,4 +52,5 @@ function draw(){
     if(cameraFeed !== null){
         image(cameraFeed, 0, 0, width, height);
     }
+    frameRate(30);
 }

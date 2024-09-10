@@ -8,6 +8,7 @@ And show me what you see through it
 Web based tool. Applying various "glitch" filters to camera feed.
 
 ### TODO
-- recording camera feed, saving pictures and videos
+#### recording camera feed
+- - preload ffmpeg when worker ready
 - - consider camera aspect ratio
 - - set framerate
