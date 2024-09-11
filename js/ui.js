@@ -6,7 +6,10 @@ const debugBtn = document.getElementById('debug-toggle');
 const debugP = document.getElementById('debug-content');
 
 document.addEventListener('DOMContentLoaded', () => {
-    camSwitchBtn.addEventListener('click', changeCamera);
+    camSwitchBtn.addEventListener('click', () => {
+        camera.nextCamera();
+        camera.startFeed();
+    });
     RecordBtn.addEventListener('touchstart', startRecording);
     RecordBtn.addEventListener('touchend', () => {
         stopRecording();
