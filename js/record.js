@@ -3,25 +3,29 @@ let recorder = null;
 let webmBlob = null;
 
 function startRecording(){
-    webmBlob = null;
-    let canvasStream = canvasElt.captureStream(30);
-    let chunks = [];
-    
-    let options = {
-        videoBitsPerSecond: 1e5,
-        mimeType: 'video/webm; codecs=h264'
-    };
-    recorder = new MediaRecorder(canvasStream, options);
+    try{
+        webmBlob = null;
+        let canvasStream = canvasElt.captureStream(30);
+        let chunks = [];
+        
+        let options = {
+            videoBitsPerSecond: 1e5,
+            mimeType: 'video/webm; codecs=h264'
+        };
+        recorder = new MediaRecorder(canvasStream, options);
 
-    recorder.ondataavailable = event => chunks.push(event.data);
-    recorder.onstop = () => {
-        canvasStream.getTracks().forEach(track => track.stop);
-        webmBlob = new Blob(chunks, {type: 'video/webm'});
-        recorder = null;
-    };
+        recorder.ondataavailable = event => chunks.push(event.data);
+        recorder.onstop = () => {
+            canvasStream.getTracks().forEach(track => track.stop);
+            webmBlob = new Blob(chunks, {type: 'video/webm'});
+            recorder = null;
+        };
 
-    recorder.start();
-    debugLog('Recorder started with options', options);
+        recorder.start();
+        debugLog('Recorder started with options', options);
+    }catch(error){
+        debugLog('startRecording error:', error);
+    }
 }
 
 function stopRecording(){
@@ -49,70 +53,82 @@ let isWorkerReady = false;
 let mp4Blob = null;
 
 function initWorker(){
-    if(worker !== null){
-        worker.terminate();
-        worker = null;
-        isWorkerReady = false;
-    }
-    worker = new Worker("js/worker-record.js");
-    worker.onmessage = event => {
-        const message = event.data;
-        if(message.type === 'stdout'){
-            debugLog('Worker stdout:', message.data);
-        }else if(message.type === 'ready'){
-            debugLog('Worker ready');
-            isWorkerReady = true;
-        }else if(message.type === 'start'){
-            debugLog('Worker has received command', message.data);
-            mp4Blob = null;
-        }else if(message.type === 'done'){
-            debugLog('Worker finished executing');
-            mp4Blob = new Blob([message.data[0].data], {type: 'video/mp4'});
-            downloadMp4();
-        }else{
-            debugLog('Unhandled worker message:', message);
+    try{
+        if(worker !== null){
+            worker.terminate();
+            worker = null;
+            isWorkerReady = false;
         }
-    };
-    worker.onerror = error => {
-        debugLog('Worker error:', error);
-    };
+        worker = new Worker("js/worker-record.js");
+        worker.onmessage = event => {
+            const message = event.data;
+            if(message.type === 'stdout'){
+                debugLog('Worker stdout:', message.data);
+            }else if(message.type === 'ready'){
+                debugLog('Worker ready');
+                isWorkerReady = true;
+            }else if(message.type === 'start'){
+                debugLog('Worker has received command', message.data);
+                mp4Blob = null;
+            }else if(message.type === 'done'){
+                debugLog('Worker finished executing');
+                mp4Blob = new Blob([message.data[0].data], {type: 'video/mp4'});
+                downloadMp4();
+            }else{
+                debugLog('Unhandled worker message:', message);
+            }
+        };
+        worker.onerror = error => {
+            debugLog('Worker error:', error);
+        };
+    }catch(error){
+        debugLog('init worker error:', error);
+    }
 }
 
 async function postConvertMessage(){
-    if(webmBlob === null){
-        debugLog('postConvertMessage: webmBlob is null');
-        return;
+    try{
+        if(webmBlob === null){
+            debugLog('postConvertMessage: webmBlob is null');
+            return;
+        }
+        const videoArray = await blobToUint8Array(webmBlob);
+        const convertMessage = {
+            type: 'command',
+            arguments: [
+                '-i', 'video.webm',
+                '-c', 'copy',
+                'video.mp4'
+            ],
+            files: [
+                {data: videoArray, name: 'video.webm'}
+            ]
+        };
+        worker.postMessage(convertMessage);
+    }catch(error){
+        debugLog('postconvertmessage error:', error);
     }
-    const videoArray = await blobToUint8Array(webmBlob);
-    const convertMessage = {
-        type: 'command',
-        arguments: [
-            '-i', 'video.webm',
-            '-c', 'copy',
-            'video.mp4'
-        ],
-        files: [
-            {data: videoArray, name: 'video.webm'}
-        ]
-    };
-    worker.postMessage(convertMessage);
 }
 
 function downloadBlob(blob){
-    let videoUrl = URL.createObjectURL(blob);
+    try{
+        let videoUrl = URL.createObjectURL(blob);
 
-    let filename = 'invalid';
-    if(blob.type === 'video/webm') filename = 'video.webm';
-    else if(blob.type === 'video/mp4') filename = 'video.mp4';
+        let filename = 'invalid';
+        if(blob.type === 'video/webm') filename = 'video.webm';
+        else if(blob.type === 'video/mp4') filename = 'video.mp4';
 
-    let anchor = document.createElement('a');
-    anchor.href = videoUrl;
-    anchor.download = filename;
-    anchor.click();
+        let anchor = document.createElement('a');
+        anchor.href = videoUrl;
+        anchor.download = filename;
+        anchor.click();
 
-    setTimeout(() => {
-        URL.revokeObjectURL(videoUrl);
-    }, 0);
+        setTimeout(() => {
+            URL.revokeObjectURL(videoUrl);
+        }, 0);
+    }catch(error){
+        debugLog('downloadBlob error:', error);
+    }
 }
 
 function downloadMp4(){
