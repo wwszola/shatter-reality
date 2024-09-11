@@ -26,7 +26,8 @@ function startCapture(deviceId){
     const constraints = {
         audio: false,
         video: {
-            deviceId: {exact: deviceId}
+            deviceId: {exact: deviceId},
+            aspectRatio: {exact: height/width}
         }
     };
     cameraFeed = createCapture(constraints);
