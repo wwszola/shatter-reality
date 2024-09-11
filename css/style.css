@@ -57,3 +57,30 @@ html, body {
 #record:active {
   background-color: rgba(255, 0, 0, 0.5);
 }
+
+#debug-toggle {
+  position: absolute;
+  top: 5%; 
+  right: 10%;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+#debug-content {
+  position: absolute;
+  top: 10%;
+  left: 5%;
+  width: 80%;
+  height: 60%;
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 5px;
+  overflow: scroll;
+  visibility: hidden;
+}
