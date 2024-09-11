@@ -21,7 +21,7 @@ function startRecording(){
     };
 
     recorder.start();
-    console.log('Recorder started with options', options);
+    debugLog('Recorder started with options', options);
 }
 
 function stopRecording(){
@@ -58,29 +58,29 @@ function initWorker(){
     worker.onmessage = event => {
         const message = event.data;
         if(message.type === 'stdout'){
-            console.log('Worker stdout:', message.data);
+            debugLog('Worker stdout:', message.data);
         }else if(message.type === 'ready'){
-            console.log('Worker ready');
+            debugLog('Worker ready');
             isWorkerReady = true;
         }else if(message.type === 'start'){
-            console.log('Worker has received command', message.data);
+            debugLog('Worker has received command', message.data);
             mp4Blob = null;
         }else if(message.type === 'done'){
-            console.log('Worker finished executing');
+            debugLog('Worker finished executing');
             mp4Blob = new Blob([message.data[0].data], {type: 'video/mp4'});
             downloadMp4();
         }else{
-            console.log('Unhandled worker message:', message);
+            debugLog('Unhandled worker message:', message);
         }
     };
     worker.onerror = error => {
-        console.log('Worker error:', error);
+        debugLog('Worker error:', error);
     };
 }
 
 async function postConvertMessage(){
     if(webmBlob === null){
-        console.error('webmBlob is null');
+        debugLog('postConvertMessage: webmBlob is null');
         return;
     }
     const videoArray = await blobToUint8Array(webmBlob);
