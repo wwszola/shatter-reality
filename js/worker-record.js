@@ -28,7 +28,7 @@ onmessage = function(event) {
         const result = ffmpeg_run(module);
         const t = Date.now() - t1;
 
-        log('Finished processing (took ${t} ms)');
+        log('Finished processing (took ' + t.toString() + ' ms)');
 
         postMessage({
             type: 'done',
