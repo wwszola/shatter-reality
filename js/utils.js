@@ -4,8 +4,12 @@ function isMobileDevice(){
 }
 
 function debugLog(...args){
+    const debugP = document.getElementById('debug-content');
+
     console.log(...args);
     if(isMobileDevice()){
-        debugP.innerText += JSON.stringify([...args]) + '\n';
+        debugP.innerHTML += '>> ';
+        debugP.innerHTML += JSON.stringify([...args]);
+        debugP.innerHTML += '<br>';
     }
 }
