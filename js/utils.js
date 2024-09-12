@@ -3,13 +3,30 @@ function isMobileDevice(){
     return isTouchDevice;
 }
 
-function debugLog(...args){
-    const debugP = document.getElementById('debug-content');
-
-    console.log(...args);
-    if(isMobileDevice()){
-        debugP.innerHTML += '>> ';
-        debugP.innerHTML += JSON.stringify([...args]);
-        debugP.innerHTML += '<br>';
-    }
+function extendDebugLog(message){
+    debugP.innerHTML += '>> ';
+    debugP.innerHTML += message;
+    debugP.innerHTML += '<br>';
 }
+
+if(isMobileDevice){
+    (function(){
+        const originalLog = console.log;
+        console.log = (...data) => {
+            extendDebugLog(JSON.stringify(data));
+            originalLog.apply(console, data);
+        };
+    })();
+
+    window.addEventListener('error', error => {
+        const message = error.toString();
+        extendDebugLog(message);
+        return false;   
+    });
+    
+    window.addEventListener('unhandledrejection', error => {
+        const message = error.toString();
+        extendDebugLog(message);
+    });
+}
+

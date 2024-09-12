@@ -20,9 +20,9 @@ class Camera{
         try{
             let stream = await navigator.mediaDevices.getUserMedia(testConstraints);
             stream.getTracks().forEach(track => track.stop);
-            debugLog('User granted access to video input');
+            console.log('User granted access to video input');
         }catch(error){
-            debugLog('Cannot access video input:', error);
+            console.log('Cannot access video input:', error);
             throw error;
         }
     }
@@ -34,8 +34,8 @@ class Camera{
             const camerasInfo = devicesInfo.filter(info => info.kind === 'videoinput');
             return camerasInfo;
         }catch(error){
-            debugLog('Camera info unavailable:', error);
-            return [];
+            console.log('Camera info unavailable', error);
+            throw error;
         }
     }
 
@@ -50,9 +50,9 @@ class Camera{
             }
             this._feed = createCapture(this._constraints);
             this._feed.hide();
-            debugLog('Feed started with constraints', this._constraints);
+            console.log('Feed started with constraints', this._constraints);
         }catch(error){
-            debugLog('Feed start failed:', error, 'with constraints:', this._constraints);
+            console.log('Feed start failed:', error, 'with constraints:', this._constraints)
             throw error;
         }
     }
@@ -75,13 +75,12 @@ class Camera{
     }
 
     setAspectRatio(ratio){
-        this._constraints.video['aspectRatio'] = {exact: ratio};
+        this._constraints.video['aspectRatio'] = {ideal: ratio};
     }
 
     nextCamera(){
         if(!this.isAvailable()){
-            debugLog('nextCamera: Camera is not available');
-            return;
+            throw new Error('Camera is not available');
         }
         this._currentCameraIndex += 1;
         this._currentCameraIndex %= this._camerasInfo.length;
