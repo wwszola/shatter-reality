@@ -19,13 +19,13 @@ if(isMobileDevice){
     })();
 
     window.addEventListener('error', error => {
-        const message = error.toString();
+        const message = error.message.toString();
         extendDebugLog(message);
         return false;   
     });
     
-    window.addEventListener('unhandledrejection', error => {
-        const message = error.toString();
+    window.addEventListener('unhandledrejection', event => {
+        const message = event.reason.toString();
         extendDebugLog(message);
     });
 }

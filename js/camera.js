@@ -22,7 +22,7 @@ class Camera{
             stream.getTracks().forEach(track => track.stop);
             console.log('User granted access to video input');
         }catch(error){
-            console.log('Cannot access video input:', error);
+            console.log('Cannot access video input:', error.message);
             throw error;
         }
     }
@@ -34,7 +34,7 @@ class Camera{
             const camerasInfo = devicesInfo.filter(info => info.kind === 'videoinput');
             return camerasInfo;
         }catch(error){
-            console.log('Camera info unavailable', error);
+            console.log('Camera info unavailable', error.message);
             throw error;
         }
     }
@@ -52,7 +52,7 @@ class Camera{
             this._feed.hide();
             console.log('Feed started with constraints', this._constraints);
         }catch(error){
-            console.log('Feed start failed:', error, 'with constraints:', this._constraints)
+            console.log('Feed start failed:', error.message, 'with constraints:', this._constraints)
             throw error;
         }
     }
