@@ -10,7 +10,7 @@ function log(content){
 onmessage = function(event) {
     const message = event.data;
 
-    if(message.type === "command") {
+    if(message.type === 'command') {
         const module = {
             print: log,
             printErr: log,
@@ -39,5 +39,5 @@ onmessage = function(event) {
 };
 
 postMessage({
-    type: 'ready'
+    type: 'loaded'
 });

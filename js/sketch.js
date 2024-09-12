@@ -1,16 +1,20 @@
 const canvasElt = document.getElementById('canvas0');
 let canvas;
 
-const camera = new Camera();
+let camera;
+let recorder;
+let converter;
 
 function setup(){
-    initWorker();
-
     canvas = createCanvas(windowWidth, windowHeight, WEBGL, canvasElt);
     pixelDensity(1);
 
+    camera = new Camera();
     camera.setAspectRatio(height/width);
     camera.startFeed();
+
+    recorder = new CanvasRecorder(canvasElt);
+    converter = new FFmpegConverter();
 }
 
 function draw(){

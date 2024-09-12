@@ -10,10 +10,12 @@ document.addEventListener('DOMContentLoaded', () => {
         camera.nextCamera();
         camera.startFeed();
     });
-    RecordBtn.addEventListener('touchstart', startRecording);
+    RecordBtn.addEventListener('touchstart', () => {
+        recorder.startRecording();
+    });
     RecordBtn.addEventListener('touchend', () => {
-        stopRecording();
-        setTimeout(postConvertMessage, 1000);
+        recorder.stopRecording();
+        console.log('recorder blobs:', recorder._videoBlobs);
     });
 
     if(!isMobileDevice()){
