@@ -29,9 +29,10 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     downloadBtn.addEventListener('click', () => {
-        if(recorder.getPrefferedMimeType === webmType){
+        if(recorder.getPrefferedMimeType() === webmType){
             if(converter.isReady()){
-                converter.convertWebmToMp4(recorder._lastBlob, (blob) => {
+                converter.convertWebmToMp4(recorder._lastBlob, (data) => {
+                    const blob = new Blob([data], {type: mp4Type});
                     downloadBlob(blob, 'video.mp4');
                 });
             }else{
@@ -48,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
         previewDiv.style.visibility = 'hidden';
     });
 
-    if(!isMobileDevice()){
+    if(!isMobileDevice() || !DEBUG){
         debugBtn.style.visibility = 'hidden';
     }
     debugBtn.addEventListener('click', () => {
