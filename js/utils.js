@@ -9,7 +9,9 @@ function extendDebugLog(message){
     debugP.innerHTML += '<br>';
 }
 
-if(isMobileDevice){
+const DEBUG = false;
+
+if(isMobileDevice() && DEBUG){
     (function(){
         const originalLog = console.log;
         console.log = (...data) => {
