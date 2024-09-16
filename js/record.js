@@ -1,25 +1,22 @@
 
+const mp4Type = 'video/mp4;codecs=h264';
+const webmType = 'video/webm;codecs=h264';
+
 class CanvasRecorder{
     constructor(canvasElement){
         this._canvasElement = canvasElement;
-        this._videoBlobs = {};
+        this._lastBlob = null;
         this._recorder = null;
         this._recorderOptions = {
             videoBitsPerSecond: 1e5
         }
+        this._recorderOptions['mimeType'] = this.getPrefferedMimeType();
     }
 
-    addBlob(blob){
-        const type = blob.type;
-        if(!this._videoBlobs.hasOwnProperty(type)){
-            this._videoBlobs[type] = [];
+    getPrefferedMimeType(){
+        if(this._recorderOptions.hasOwnProperty('mimeType')){
+            return this._recorderOptions['mimeType'];
         }
-        this._videoBlobs[type].push(blob);
-    }
-
-    static getPrefferedMimeType(){
-        const mp4Type = 'video/mp4;codecs=h264';
-        const webmType = 'video/webm;codecs=h264';
         if(MediaRecorder.isTypeSupported(mp4Type)){
             return mp4Type;
         }else if(MediaRecorder.isTypeSupported(webmType)){
@@ -32,9 +29,7 @@ class CanvasRecorder{
     startRecording(){
         const stream = this._canvasElement.captureStream(30);
         const chunks = [];
-        const type = CanvasRecorder.getPrefferedMimeType();
-        this._recorderOptions['mimeType'] = type;
-
+        const type = this.getPrefferedMimeType();
         this._recorder = new MediaRecorder(stream, this._recorderOptions);
         this._recorder.ondataavailable = event => chunks.push(event.data);
         this._recorder.onstop = () => {
@@ -47,7 +42,7 @@ class CanvasRecorder{
             if(videoBlob.size == 0){
                 throw new Error('Recorder video blob is size zero');
             }
-            this.addBlob(videoBlob);
+            this._lastBlob = videoBlob;
         }
 
         this._recorder.start();
