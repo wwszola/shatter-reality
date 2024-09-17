@@ -33,7 +33,7 @@ class CanvasRecorder{
         this._recorder = new MediaRecorder(stream, this._recorderOptions);
         this._recorder.ondataavailable = event => chunks.push(event.data);
         this._recorder.onstop = () => {
-            stream.getTracks().forEach(track => track.stop);
+            stream.getTracks().forEach(track => track.stop());
             if(chunks.length == 0){
                 this._recorder = null;
                 throw new Error('No chunks recorded');
@@ -43,7 +43,7 @@ class CanvasRecorder{
                 throw new Error('Recorder video blob is size zero');
             }
             this._lastBlob = videoBlob;
-        }
+        };
 
         this._recorder.start();
         console.log('Recorder started with options', this._recorderOptions);
