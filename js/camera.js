@@ -7,7 +7,6 @@ class Camera{
             }
         }
         this._camerasInfo = [];
-        Camera.getCamerasInfo().then(info => this._camerasInfo = info);
         this._currentCameraIndex = -1;
         this._feed = null;
     }
@@ -19,7 +18,7 @@ class Camera{
         };
         try{
             let stream = await navigator.mediaDevices.getUserMedia(testConstraints);
-            stream.getTracks().forEach(track => track.stop);
+            stream.getTracks().forEach(track => track.stop());
             console.log('User granted access to video input');
         }catch(error){
             console.log('Cannot access video input:', error.message);
@@ -29,12 +28,22 @@ class Camera{
 
     static async getCamerasInfo(){
         try{
-            Camera.askPermissions();
+            await Camera.askPermissions();
             const devicesInfo = await navigator.mediaDevices.enumerateDevices();
             const camerasInfo = devicesInfo.filter(info => info.kind === 'videoinput');
             return camerasInfo;
         }catch(error){
             console.log('Camera info unavailable', error.message);
+            throw error;
+        }
+    }
+
+    async initCameraInfo(){
+        try{
+            const info = await Camera.getCamerasInfo();
+            this._camerasInfo = info;
+        }catch(error){
+            console.log('Cannot initialize camera', error.message);
             throw error;
         }
     }
@@ -48,9 +57,11 @@ class Camera{
             if(this._feed !== null){
                 this.stopFeed();
             }
-            this._feed = createCapture(this._constraints);
-            this._feed.hide();
-            console.log('Feed started with constraints', this._constraints);
+            const feed = createCapture(this._constraints, (stream) => {
+                this._feed = feed;
+                this._feed.hide();
+                console.log('Feed started with constraints', this._constraints, 'using stream', stream);
+            });
         }catch(error){
             console.log('Feed start failed:', error.message, 'with constraints:', this._constraints)
             throw error;
@@ -61,7 +72,7 @@ class Camera{
         // mirroring p5js implementation in what property to use
         const stream = 'srcObject' in this._feed.elt ? this._feed.elt.srcObject : this._feed.elt.src;
         if(stream !== null)
-            stream.getTracks().forEach(track => track.stop);
+            stream.getTracks().forEach(track => track.stop());
         this._feed.remove();
         this._feed = null;
     }

@@ -16,6 +16,9 @@ function setup(){
 
     camera = new Camera();
     camera.setAspectRatio(height/width);
+    camera.initCameraInfo().then(() => {
+        camera.startFeed();
+    });
 
     recorder = new CanvasRecorder(canvasElt);
     if(recorder.getPrefferedMimeType() === webmType){
@@ -29,8 +32,6 @@ function setup(){
     createFramebuffers(filterRes);
     configureGLBuffers(canvas);
     createGlitchGeo(canvas);
-
-    camera.startFeed();
 }
 
 function draw(){
@@ -39,7 +40,7 @@ function draw(){
 
     if(preview.isActive()){
         image(preview.getImage(), 0, 0, width, height);
-    }else{
+    }else if(camera.isActive()){
         if(random() < 0.1){
             canvas._freeBuffers(glitchGeo.mid);
             createGlitchGeo(canvas);
