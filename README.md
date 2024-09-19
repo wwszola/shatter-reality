@@ -7,10 +7,11 @@ And show me what you see through it
 
 Web based tool. Applying various "glitch" filters to camera feed.
 
+#### Limitations
+This project was created to explore artistic ideas. The code is not production ready. Recording resolution is capped at device screen resolution.
+Using MediaRecorder API for an appropriate implementation is tricky due to my limited access to different mobile devices and a, hence adequate testing is not really doable.
+
 ### TODO
-- second off screen canvas to record in full camera resolution  (p5 graphics?)
-- rewrite filter to a class
-- change filter resolution when camera changes
 - expose filter params
 - set framerate
 - change script types to module
