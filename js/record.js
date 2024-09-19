@@ -1,6 +1,6 @@
 
 const mp4Type = 'video/mp4;codecs=h264';
-const webmType = 'video/webm;codecs=h264';
+const webmType = 'video/x-matroska;codecs=h264';
 
 class CanvasRecorder{
     constructor(canvasElement){
