@@ -6,13 +6,15 @@ class GlitchFilter{
         GlitchFilter._glitchShader = loadShader('shaders/glitch.vert', 'shaders/glitch.frag');
     }
 
-    constructor(renderer){
+    constructor(renderer, params = {}){
+        this._params = {
+            pixelateFactor: 8
+        };
+        this.setParams(params);
+
         this._renderer = renderer;
 
-        this._res = {
-            width: this._renderer.width,
-            height: this._renderer.height,
-        }
+        this._res = this.getComputedRes();
         const options = {
             width: this._res.width,
             height: this._res.height,
@@ -26,6 +28,41 @@ class GlitchFilter{
         this._geometry = null;
 
         this._configureGLBuffers();
+    }
+
+    resize(w, h){
+        this._output.resize(w, h);
+        this._previous.resize(w, h);
+        this._res.width = w;
+        this._res.height = h;
+    }
+
+    getComputedRes(){
+        return {
+            width: floor(this._renderer.width/this._params.pixelateFactor),
+            height: floor(this._renderer.height/this._params.pixelateFactor)
+        };
+    }
+
+    _resizeIfNeeded(){
+        if(this._previous === undefined || this._output === undefined){
+            return;
+        }
+        const computedRes = this.getComputedRes();
+        if(computedRes.width != this._res.width || computedRes.height != this._res.height){
+            this.resize(computedRes.width, computedRes.height);
+        }
+    }
+
+    setParams(changes){
+        for(const key in changes){
+            if(this._params.hasOwnProperty(key)){
+                this._params[key] = changes[key];
+                if(key === 'pixelateFactor'){
+                    this._resizeIfNeeded();
+                }
+            }
+        }
     }
 
     reset(src){
@@ -87,7 +124,7 @@ class GlitchFilter{
         translate(-this._res.width/2, -this._res.height/2);
 
         image(src, 0, 0, this._res.width, this._res.height);
-    
+        
         this._shaderProg.setUniform('uInputTex', src);
         this._shaderProg.setUniform('uPrevTex', this._previous);
         shader(this._shaderProg);
