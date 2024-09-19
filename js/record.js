@@ -8,7 +8,7 @@ class CanvasRecorder{
         this._lastBlob = null;
         this._recorder = null;
         this._recorderOptions = {
-            videoBitsPerSecond: 1e6
+            // videoBitsPerSecond: 1e6
         }
         this._recorderOptions['mimeType'] = this.getPrefferedMimeType();
     }
