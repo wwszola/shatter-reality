@@ -89,6 +89,20 @@ class Camera{
         this._constraints.video['aspectRatio'] = {ideal: ratio};
     }
 
+    setResolution(w, h){
+        const aspectRatio = w/h;
+        this._constraints.video['aspectRatio'] = {ideal: aspectRatio};
+        if(window.matchMedia('(orientation:portrait)').matches){
+            [w, h] = [h, w];    
+        }
+        this._constraints.video['width'] = {ideal: w};
+        this._constraints.video['height'] = {ideal: h};
+    }
+
+    getActiveResolution(){
+        return {width: this._feed.width, height: this._feed.height};
+    }
+
     nextCamera(){
         if(!this.isAvailable()){
             throw new Error('Camera is not available');
