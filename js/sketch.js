@@ -5,9 +5,10 @@ let camera;
 let recorder;
 let converter;
 let preview;
+let filter;
 
 function preload(){
-    preloadGlitchShader();
+    GlitchFilter.preloadShaders();
 }
 
 function setup(){
@@ -15,8 +16,9 @@ function setup(){
     pixelDensity(1);
 
     camera = new Camera();
-    camera.setAspectRatio(height/width);
+    camera.setResolution(width, height);
     camera.initCameraInfo().then(() => {
+        camera.nextCamera();
         camera.startFeed();
     });
 
@@ -27,11 +29,8 @@ function setup(){
 
     preview = new Preview();
 
-    const pixelateFactor = 8;
-    const filterRes = {width: width/pixelateFactor, height: height/pixelateFactor};
-    createFramebuffers(filterRes);
-    configureGLBuffers(canvas);
-    createGlitchGeo(canvas);
+    filter = new GlitchFilter(canvas);
+    filter.createGeometry();
 }
 
 function draw(){
@@ -39,15 +38,15 @@ function draw(){
     background('yellow');
 
     if(preview.isActive()){
-        image(preview.getImage(), 0, 0, width, height);
+        const src = preview.getImage();
+        image(src, 0, 0, width, height);
     }else if(camera.isActive()){
-        if(random() < 0.1){
-            canvas._freeBuffers(glitchGeo.mid);
-            createGlitchGeo(canvas);
+        if(random() < 1.0){
+            filter.createGeometry();
         }
-        applyFilter(camera.feed);
+        const result = filter.apply(camera.feed);
 
-        image(output, 0, 0, width, height);
+        image(result, 0, 0, width, height);
     }
 
     frameRate(30);
