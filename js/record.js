@@ -7,8 +7,9 @@ class CanvasRecorder{
         this._canvasElement = canvasElement;
         this._lastBlob = null;
         this._recorder = null;
+        this._onStopSuccess = undefined;
         this._recorderOptions = {
-            videoBitsPerSecond: 1e6
+            // videoBitsPerSecond: 1e6
         }
         this._recorderOptions['mimeType'] = this.getPrefferedMimeType();
     }
@@ -43,14 +44,23 @@ class CanvasRecorder{
                 throw new Error('Recorder video blob is size zero');
             }
             this._lastBlob = videoBlob;
+            if(this._onStopSuccess){
+                this._onStopSuccess(this._lastBlob);
+                this._onStopSuccess = undefined;
+            }
         };
 
         this._recorder.start();
         console.log('Recorder started with options', this._recorderOptions);
     }
 
-    stopRecording(){
+    stopRecording(success){
+        this._onStopSuccess = success;
         this._recorder.stop();
+    }
+
+    isRecording(){
+        return this._recorder && this._recorder.state === 'recording';
     }
 }
 
