@@ -1,34 +1,73 @@
 
 
-const toolsDiv = document.getElementById('tools');
-const camSwitchBtn = document.getElementById('cam-switch');
-const RecordBtn = document.getElementById('record');
+const cameraToolsDiv = document.getElementById('camera-tools');
+const camSwitchButton = document.getElementById('cam-switch-button');
+const recordButton = document.getElementById('record-button');
 
-const debugBtn = document.getElementById('debug-toggle');
-const debugP = document.getElementById('debug-content');
 
-const previewDiv = document.getElementById('preview');
-const downloadBtn = document.getElementById('download');
-const exitBtn = document.getElementById('exit');
+const previewToolsDiv = document.getElementById('preview-tools');
+const downloadButton = document.getElementById('download-button');
+const exitPreviewButton = document.getElementById('exit-preview-button');
+
+const filterParamsDiv = document.getElementById('filter-params');
+
+function addRangeParam(name, min, max, step, _default){
+    const container = document.createElement('div');
+    container.class = '-container';
+    container.id = name + '-param-container';
+
+    const input = document.createElement('input');
+    input.type = 'range';
+    input.min = min;
+    input.max = max;
+    input.step = step;
+    input.defaultValue = _default;
+    input.class = 'param-tool';
+    input.id = name + '-param-range';
+
+    input.addEventListener('input', (event) => {
+        const value = Number(event.target.value);
+        const changes = {};
+        changes[name] = value;
+        filter.setParams(changes);
+    });
+
+    container.appendChild(input);
+    filterParamsDiv.appendChild(container);
+}
 
 document.addEventListener('DOMContentLoaded', () => {
-    camSwitchBtn.addEventListener('click', () => {
+    cameraToolsDiv.style.visibility = 'visible';
+    previewToolsDiv.style.visibility = 'hidden';
+
+    camSwitchButton.addEventListener('click', () => {
         camera.nextCamera();
         camera.startFeed();
     });
-    RecordBtn.addEventListener('touchstart', () => {
-        recorder.startRecording();
-    });
-    RecordBtn.addEventListener('touchend', () => {
-        recorder.stopRecording();
-        setTimeout(()=>{
-            preview.playBlob(recorder._lastBlob);
-            toolsDiv.style.visibility = 'hidden';
-            previewDiv.style.visibility = 'visible';
-        }, 2500);
+    
+    recordButton.addEventListener('click', () => {
+        if(recorder.isRecording()){
+            recorder.stopRecording((videoBlob) => {
+                preview.playBlob(videoBlob);
+                cameraToolsDiv.style.visibility = 'hidden';
+                previewToolsDiv.style.visibility = 'visible';
+                filterParamsDiv.style.visibility = 'hidden';
+            });
+            recordButton.style.backgroundColor = '';
+        }else{
+            recorder.startRecording();
+            recordButton.style.backgroundColor = 'rgba(255, 0, 0, 0.5)';
+        }
     });
 
-    downloadBtn.addEventListener('click', () => {
+    exitPreviewButton.addEventListener('click', () => {
+        preview.stop();
+        cameraToolsDiv.style.visibility = 'visible';
+        previewToolsDiv.style.visibility = 'hidden';
+        filterParamsDiv.style.visibility = 'visible';
+    });
+
+    downloadButton.addEventListener('click', () => {
         if(recorder.getPrefferedMimeType() === webmType){
             if(converter.isReady()){
                 converter.convertWebmToMp4(recorder._lastBlob, (data) => {
@@ -43,19 +82,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    exitBtn.addEventListener('click', () => {
-        preview.stop();
-        toolsDiv.style.visibility = 'visible';
-        previewDiv.style.visibility = 'hidden';
-    });
+    addRangeParam('pixelateFactor', 1, 16, 1, 4);
 
-    if(!isMobileDevice() || !DEBUG){
-        debugBtn.style.visibility = 'hidden';
-    }
-    debugBtn.addEventListener('click', () => {
-        if(debugP.style.visibility === 'hidden')
-            debugP.style.visibility = 'visible';
-        else
-            debugP.style.visibility = 'hidden';
-    });
 });

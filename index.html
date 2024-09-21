@@ -10,20 +10,28 @@
 
         <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.10.0/p5.min.js"></script>
         <body>
-        <div id="sketch">
-            <canvas id="canvas0"></canvas>
-            <div id="tools">
-                <button id="cam-switch">Cam switch</button>
-                <button id="record">Record</button>
+            <div class="app-container">
+                <canvas></canvas>
+                <div class="bottom-toolbar" id="camera-tools">
+                    <button class="bottom-tool" id="cam-switch-button">
+                        <img src="icons/cam-switch.svg" alt="Camera switch" />
+                    </button>
+                    <button class="bottom-tool" id="record-button">
+                        <img src="icons/record-video.svg" alt="Record" />
+                    </button>
+                </div>
+                <div class="bottom-toolbar" id="preview-tools">
+                    <button class="bottom-tool" id="exit-preview-button">
+                        <img src="icons/cross.svg" alt="Exit preview" />
+                    </button>
+                    <button class="bottom-tool" id="download-button">
+                        <img src="icons/download.svg" alt="Download video" />
+                    </button>
+                </div>
+                <div class="right-toolbar" id="filter-params">
 
-                <button id="debug-toggle">Debug</button>
-                <p id="debug-content"></p>
+                </div>
             </div>
-            <div id="preview">
-                <button id="download">Download</button>
-                <button id="exit">Exit</button>
-            </div>
-        </div>
 
         <script src="js/utils.js"></script>
         <script src="js/camera.js"></script>

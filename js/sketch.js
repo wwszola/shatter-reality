@@ -1,4 +1,3 @@
-const canvasElt = document.getElementById('canvas0');
 let canvas;
 
 let camera;
@@ -12,7 +11,17 @@ function preload(){
 }
 
 function setup(){
-    canvas = createCanvas(windowWidth, windowHeight, WEBGL, canvasElt);
+    const canvasSize = {
+        width: windowWidth,
+        height: windowHeight
+    }
+    if(!isMobileDevice()){
+        canvasSize.width = 720;
+        canvasSize.height = 720;
+    }
+    const canvasElt = document.querySelector('.app-container canvas');
+
+    canvas = createCanvas(canvasSize.width, canvasSize.height, WEBGL, canvasElt);
     pixelDensity(1);
 
     camera = new Camera();
