@@ -50,9 +50,6 @@ function draw(){
         const src = preview.getImage();
         image(src, 0, 0, width, height);
     }else if(camera.isActive()){
-        if(random() < 1.0){
-            filter.createGeometry();
-        }
         const result = filter.apply(camera.feed);
 
         image(result, 0, 0, width, height);

@@ -83,5 +83,5 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     addRangeParam('pixelateFactor', 1, 16, 1, 4);
-
+    addRangeParam('resetGeometryRate', 0.0, 1.0, 0.1, 0.5);
 });
