@@ -8,7 +8,8 @@ class GlitchFilter{
 
     constructor(renderer, params = {}){
         this._params = {
-            pixelateFactor: 8
+            pixelateFactor: 8,
+            resetGeometryRate: 0.5,
         };
         this.setParams(params);
 
@@ -84,9 +85,17 @@ class GlitchFilter{
             'aCopyValue', // attribute name
             this._renderer
         );
+        const translateBuffer = new p5.RenderBuffer(
+            2, // number of components per vertex
+            'translate', // src
+            'translateBuffer', // dst
+            'aTranslate', // attribute name
+            this._renderer
+        );
     
         this._renderer.retainedMode.buffers.fill.push(
             copyValueBuffer,
+            translateBuffer,
         );
     }
 
@@ -96,29 +105,32 @@ class GlitchFilter{
         }
         this._geometry = new p5.Geometry();
         this._geometry.gid = 'glitchGeometry'+Date.now().toString();
-        const K = 8;
+        const K = 4;
         const points = [];
-        for(let i=0; i<64; i+=1){
+        for(let i=0; i<16; i+=1){
             let x = round(random(-0.5, 1.5)*K)/K;
             let y = round(random(-0.5, 1.5)*K)/K;
             points.push(new p5.Vector(x, y, 0));
         }
         const N = points.length;
         this._geometry.copyValue = [];
-        for(let i=0; i<64; i+=1){
+        this._geometry.translate = [];
+        for(let i=0; i<8; i+=1){
             const face = [];
             const copyValue = random();
+            const _translate = [random(-0.1, 0.1), random(-0.1, 0.1)];
             for(let k=0; k<3; k+=1){
                 const idx = floor(random()*N);
                 this._geometry.vertices.push(points[idx]);
                 face.push(this._geometry.vertices.length - 1);
                 this._geometry.copyValue.push(copyValue);
+                this._geometry.translate.push(..._translate);
             }
             this._geometry.faces.push(face);
         }
     }
 
-    apply(src){
+    _render(src){
         this._output.begin();
         clear();
         translate(-this._res.width/2, -this._res.height/2);
@@ -143,4 +155,13 @@ class GlitchFilter{
         
         return this._output;
     }
+
+    apply(src){
+        if(random() < this._params.resetGeometryRate){
+            this.createGeometry();
+        }
+
+        return this._render(src);
+    }
+
 }
