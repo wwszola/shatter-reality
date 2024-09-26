@@ -13,7 +13,7 @@ const filterParamsDiv = document.getElementById('filter-params');
 
 function addRangeParam(name, min, max, step, _default){
     const container = document.createElement('div');
-    container.class = '-container';
+    container.className = 'param-container';
     container.id = name + '-param-container';
 
     const input = document.createElement('input');
@@ -22,7 +22,7 @@ function addRangeParam(name, min, max, step, _default){
     input.max = max;
     input.step = step;
     input.defaultValue = _default;
-    input.class = 'param-tool';
+    input.className = 'param-tool';
     input.id = name + '-param-range';
 
     input.addEventListener('input', (event) => {

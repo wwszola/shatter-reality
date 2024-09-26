@@ -88,9 +88,9 @@ button:active.bottom-tool{
 
 .right-toolbar{
     position: absolute;
-    right: 10%;
+    right: 5%;
     top: 50%;
-    width: 20%;
+    width: 25%;
     height: 40%;
     display: flex;
     flex-direction: column;
@@ -101,7 +101,7 @@ button:active.bottom-tool{
     position: relative;
     width: 100%;
     height: 10%;
-    padding-bottom: 50%;
+    padding-bottom: 10%;
 }
 
 .param-tool{
