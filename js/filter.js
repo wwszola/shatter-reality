@@ -10,6 +10,9 @@ class GlitchFilter{
         this._params = {
             pixelateFactor: 8,
             resetGeometryRate: 0.5,
+            transformPower: 0.1,
+            maxTriangleSize: 1.0,
+            copyValueThreshold: 0.3,
         };
         this.setParams(params);
 
@@ -84,6 +87,7 @@ class GlitchFilter{
         
         this._shaderProg.setUniform('uInputTex', src);
         this._shaderProg.setUniform('uPrevTex', this._previous);
+        this._shaderProg.setUniform('uCopyValueThreshold', this._params.copyValueThreshold);
         shader(this._shaderProg);
         scale(this._res.width, this._res.height);
         noStroke();
@@ -103,12 +107,12 @@ class GlitchFilter{
 
     apply(src){
         if(random() < this._params.resetGeometryRate){
-            const newTriangle = randomTriangle();
+            const newTriangle = randomTriangle(this._params.maxTriangleSize);
             const idx = this._triangles.pushTriangle(newTriangle);
             this._triangles.setCopyValue(idx, random());
             this._triangles.setTranslate(
                 idx,
-                [gaussianSample(0.0, 0.1), gaussianSample(0.0, 0.1)]
+                [gaussianSample(0.0, this._params.transformPower), gaussianSample(0.0, this._params.transformPower)]
             );
             this._triangles.reattach();
         }
@@ -118,12 +122,12 @@ class GlitchFilter{
 
 }
 
-function randomTriangle(){
+function randomTriangle(maxSize){
     const center = p5.Vector.random2D();
     const points = [];
     for(let i=0; i<3; i+=1){
         const angle = random(TWO_PI*(i)/3.0, TWO_PI*(i+1)/3.0);
-        const mag = random(0.25, 1.0);
+        const mag = random(0.25, maxSize);
         const x = mag*cos(angle) + center.x;
         const y = mag*sin(angle) + center.y;
         points.push(new p5.Vector(x, y, 0.0));

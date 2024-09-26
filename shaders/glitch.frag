@@ -3,6 +3,8 @@ precision highp float;
 uniform sampler2D uInputTex;
 uniform sampler2D uPrevTex;
 
+uniform float uCopyValueThreshold;
+
 varying vec2 vPos;
 varying float vCopyValue;
 varying vec2 vTranslate;
@@ -54,7 +56,7 @@ void main (){
     p = clamp(p, 0.0, 1.0);
 
     vec4 color = texture2D(uInputTex, p.xy);
-    if(vCopyValue < 0.3)
+    if(vCopyValue < uCopyValueThreshold)
         color = texture2D(uPrevTex, p.xy);
     gl_FragColor = color;
 
