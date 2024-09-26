@@ -39,7 +39,6 @@ function setup(){
     preview = new Preview();
 
     filter = new GlitchFilter(canvas);
-    filter.createGeometry();
 }
 
 function draw(){
