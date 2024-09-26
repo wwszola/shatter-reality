@@ -106,7 +106,10 @@ class GlitchFilter{
             const newTriangle = randomTriangle();
             const idx = this._triangles.pushTriangle(newTriangle);
             this._triangles.setCopyValue(idx, random());
-            this._triangles.setTranslate(idx, [random(-0.1, 0.1), random(-0.1, 0.1)]);
+            this._triangles.setTranslate(
+                idx,
+                [gaussianSample(0.0, 0.1), gaussianSample(0.0, 0.1)]
+            );
             this._triangles.reattach();
         }
 

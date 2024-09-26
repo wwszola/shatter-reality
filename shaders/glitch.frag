@@ -45,7 +45,7 @@ mat3 constructShear(vec2 v){
 void main (){
     vec2 uv = vPos;
     vec3 p = vec3(uv.x, uv.y, 1.0);
-    mat3 transform = constructShear(vTranslate);
+    mat3 transform = constructTranslation(vTranslate);
     
     // p.xy -= vec2(0.5, 0.5);
     p = transform * p;
